@@ -7,6 +7,6 @@ setup(
         CUDAExtension('roi_pool_cuda', [
             'src/roi_pool_cuda.cpp',
             'src/roi_pool_kernel.cu',
-        ])
+        ], extra_compile_args={'cxx': [], 'nvcc': [ '-D__CUDA_NO_HALF_OPERATORS__' ] }),
     ],
     cmdclass={'build_ext': BuildExtension})

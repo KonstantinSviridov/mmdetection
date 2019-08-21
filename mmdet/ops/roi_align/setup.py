@@ -7,6 +7,6 @@ setup(
         CUDAExtension('roi_align_cuda', [
             'src/roi_align_cuda.cpp',
             'src/roi_align_kernel.cu',
-        ]),
+        ], extra_compile_args={'cxx': [], 'nvcc': [ '-D__CUDA_NO_HALF_OPERATORS__' ] }),
     ],
     cmdclass={'build_ext': BuildExtension})

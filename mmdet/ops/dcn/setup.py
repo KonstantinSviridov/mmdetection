@@ -7,9 +7,10 @@ setup(
         CUDAExtension('deform_conv_cuda', [
             'src/deform_conv_cuda.cpp',
             'src/deform_conv_cuda_kernel.cu',
-        ]),
+        ], extra_compile_args={'cxx': [], 'nvcc': [ '-D__CUDA_NO_HALF_OPERATORS__' ] }),
         CUDAExtension(
             'deform_pool_cuda',
-            ['src/deform_pool_cuda.cpp', 'src/deform_pool_cuda_kernel.cu']),
+            ['src/deform_pool_cuda.cpp', 'src/deform_pool_cuda_kernel.cu'],
+         extra_compile_args={'cxx': [], 'nvcc': [ '-D__CUDA_NO_HALF_OPERATORS__' ] }),
     ],
     cmdclass={'build_ext': BuildExtension})

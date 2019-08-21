@@ -11,7 +11,7 @@ ext_args = dict(
     language='c++',
     extra_compile_args={
         'cc': ['-Wno-unused-function', '-Wno-write-strings'],
-        'nvcc': ['-c', '--compiler-options', '-fPIC'],
+        'nvcc': ['-c', '--compiler-options', '-fPIC', '-D__CUDA_NO_HALF_OPERATORS__'],
     },
 )
 
@@ -33,7 +33,7 @@ def customize_compiler_for_nvcc(self):
     self.src_extensions.append('.cu')
 
     # save references to the default compiler_so and _comple methods
-    default_compiler_so = self.compiler_so
+    default_compiler_so = self.compiler_so if hasattr(self,"compiler_so") else None
     super = self._compile
 
     # now redefine the _compile method. This gets executed for each
@@ -51,7 +51,8 @@ def customize_compiler_for_nvcc(self):
 
         super(obj, src, ext, cc_args, postargs, pp_opts)
         # reset the default compiler_so, which we might have changed for cuda
-        self.compiler_so = default_compiler_so
+        if default_compiler_so is not None:
+            self.compiler_so = default_compiler_so
 
     # inject our redefined _compile method into the class
     self._compile = _compile
@@ -76,9 +77,9 @@ setup(
         CUDAExtension('nms_cuda', [
             'src/nms_cuda.cpp',
             'src/nms_kernel.cu',
-        ]),
+        ], extra_compile_args={'cxx': [], 'nvcc': [ '-D__CUDA_NO_HALF_OPERATORS__' ] }),
         CUDAExtension('nms_cpu', [
             'src/nms_cpu.cpp',
-        ]),
+        ], extra_compile_args={'cxx': [], 'nvcc': [ '-D__CUDA_NO_HALF_OPERATORS__' ] })
     ],
     cmdclass={'build_ext': BuildExtension})

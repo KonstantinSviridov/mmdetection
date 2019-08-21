@@ -7,6 +7,6 @@ setup(
         CUDAExtension('masked_conv2d_cuda', [
             'src/masked_conv2d_cuda.cpp',
             'src/masked_conv2d_kernel.cu',
-        ]),
+        ], extra_compile_args={'cxx': [], 'nvcc': [ '-D__CUDA_NO_HALF_OPERATORS__' ] })
     ],
     cmdclass={'build_ext': BuildExtension})
