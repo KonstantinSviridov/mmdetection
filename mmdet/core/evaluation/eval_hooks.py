@@ -4,7 +4,7 @@ import os.path as osp
 import mmcv
 import numpy as np
 import torch
-import torch.distributed as dist
+#import torch.distributed as dist
 from mmcv.runner import Hook, obj_from_dict
 from mmcv.parallel import scatter, collate
 from pycocotools.cocoeval import COCOeval
@@ -46,7 +46,7 @@ class DistEvalHook(Hook):
             with torch.no_grad():
                 result = runner.model(
                     return_loss=False, rescale=True, **data_gpu)
-            results[idx] = result
+            results[idx] = result if not runner.model.module.with_mask else result[0]
 
             batch_size = runner.world_size
             if runner.rank == 0:
@@ -55,7 +55,7 @@ class DistEvalHook(Hook):
 
         if runner.rank == 0:
             print('\n')
-            dist.barrier()
+            #dist.barrier()
             for i in range(1, runner.world_size):
                 tmp_file = osp.join(runner.work_dir, 'temp_{}.pkl'.format(i))
                 tmp_results = mmcv.load(tmp_file)
@@ -67,8 +67,8 @@ class DistEvalHook(Hook):
             tmp_file = osp.join(runner.work_dir,
                                 'temp_{}.pkl'.format(runner.rank))
             mmcv.dump(results, tmp_file)
-            dist.barrier()
-        dist.barrier()
+            #dist.barrier()
+        #dist.barrier()
 
     def evaluate(self):
         raise NotImplementedError
